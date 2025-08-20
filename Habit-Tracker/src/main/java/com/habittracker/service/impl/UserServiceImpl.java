@@ -5,8 +5,9 @@ import com.habittracker.dto.UserLoginRequestDto;
 import com.habittracker.dto.UserRegistrationRequestDto;
 import com.habittracker.entity.User;
 import com.habittracker.exception.AccountAlreadyExistsException;
+import com.habittracker.security.HabitUserDetails;
 import com.habittracker.service.IUserService;
-import io.jsonwebtoken.security.Password;
+import com.habittracker.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
@@ -21,6 +22,7 @@ public class UserServiceImpl implements IUserService {
     private final CompromisedPasswordChecker compromisedPasswordChecker;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     public void createUser(final UserRegistrationRequestDto userRegistrationRequestDto) {
         if (compromisedPasswordChecker.check(userRegistrationRequestDto.getPassword()).isCompromised()) {
@@ -37,11 +39,16 @@ public class UserServiceImpl implements IUserService {
         userRepository.save(user);
     }
 
-    public void loginUser(final UserLoginRequestDto userLoginRequestDto) {
-        userRepository.findByUsername(userLoginRequestDto.getUsername())
-                .filter(user -> passwordEncoder.matches(userLoginRequestDto.getPassword(), user.getPassword()))
+    public String loginUser(final UserLoginRequestDto userLoginRequestDto) {
+        final User user = userRepository.findByUsername(userLoginRequestDto.getUsername())
+                .filter(account -> passwordEncoder.matches(userLoginRequestDto.getPassword(), account.getPassword()))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
-        // Here you would typically generate a JWT token or session for the user
-        // For simplicity, we are just checking credentials
+
+        return jwtUtil.generateToken(new HabitUserDetails(user));
+    }
+
+    public User getUser(final String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
     }
 }

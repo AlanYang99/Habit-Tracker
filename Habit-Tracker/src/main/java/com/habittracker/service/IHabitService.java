@@ -1,5 +1,8 @@
 package com.habittracker.service;
 
+import com.habittracker.dto.HabitRequestDto;
+import com.habittracker.entity.AbstractHabit;
+
 public interface IHabitService {
-    void createHabit(final String habitName, final String description);
+    AbstractHabit createHabit(final HabitRequestDto habitRequestDto);
 }

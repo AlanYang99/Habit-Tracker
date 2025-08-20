@@ -21,20 +21,19 @@ public abstract class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @CreatedDate
-//    @Column(name = "created_at", nullable = false, updatable = false)
-//    private Instant createdAt;
-//
-//    @CreatedBy
-//    @Column(name = "created_by", nullable = false, updatable = false)
-//    private String createdBy;
-//
-//    @UpdateTimestamp
-//    @LastModifiedBy
-//    @Column(name = "updated_at", insertable = false)
-//    private Instant updatedAt;
-//
-//    @LastModifiedBy
-//    @Column(name = "updated_by", insertable = false)
-//    private String updatedBy;
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @CreatedBy
+    @Column(name = "created_by", nullable = false, updatable = false)
+    private String createdBy;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at", insertable = false)
+    private Instant updatedAt;
+
+    @LastModifiedBy
+    @Column(name = "updated_by", insertable = false)
+    private String updatedBy;
 }

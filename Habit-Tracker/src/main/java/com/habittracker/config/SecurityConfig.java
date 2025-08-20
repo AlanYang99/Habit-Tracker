@@ -35,7 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
         return http.csrf(CsrfConfigurer::disable)
             .authorizeHttpRequests(request ->
-                request.requestMatchers("/api/v1/habit/**", "/api/v1/auth/**").permitAll()
+                request.requestMatchers("/api/v1/habit/**", "/api/v1/auth/**","/api/v1/auth/login").permitAll()
                        .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)

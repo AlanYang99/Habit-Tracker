@@ -6,7 +6,9 @@ import static com.habittracker.constants.ApplicationConstants.JWT_SECRET_KEY;
 import static com.habittracker.constants.ApplicationConstants.JWT_SECRET_VALUE;
 import static com.habittracker.constants.ApplicationConstants.JWT_EXPIRATION_TIME;
 
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -16,9 +18,10 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
-    private Environment env;
+    private final Environment env;
 
     public String generateToken(final UserDetails userDetails) {
         return Jwts.builder()
@@ -30,7 +33,8 @@ public class JwtUtil {
 
     private Key getKey() {
         final String secretKey = env.getProperty(JWT_SECRET_KEY, JWT_SECRET_VALUE);
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String extractUsername(final String token) {
