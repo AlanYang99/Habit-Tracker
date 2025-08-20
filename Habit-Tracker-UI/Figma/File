@@ -1,0 +1,118 @@
++------------------------------------------------+
+| [Header: Habit Tracker]     [User Avatar + Menu]|
++------------------------------------------------+
+
+[Welcome Back, User!]
+
+[XP Progress Bar]
+--------------------------------------------------
+|████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░|
+Level 5   320 / 500 XP
+--------------------------------------------------
+
+[Streak Counter]       [Badges Earned]
+🔥 7-Day Streak         🏅 3 Badges
+
+
+Can add bar list for completed, incomplete, and inprogress habits
++-----------------------------------------------------------+  
+|                   Habits for Today                        |
++-----------------------------------------------------------+
+| [ ] Drink Water (Daily) - 🕐 Next Due: 12:00 PM           |
+| [x] Gym (Mon, Wed, Fri) - 🏋️‍♂️ Streak: 4 days           |
+| [ ] Meal Prep (Once per Week) - 📅 Due: Friday            |
+| [x] Doctor Appointment (Aug 20) - ✅ Completed             |
++-----------------------------------------------------------+  
+|       [ + Add New Habit ] [ View Gamification Stats ]      |
++-----------------------------------------------------------+ 
+
+
+
++---------------------------------------------+
+| Add New Habit                          [X]  |
++---------------------------------------------+
+| Habit Name: [__________________________]    |
+| Frequency:                                  |
+|   ( ) Daily                                |
+|   ( ) Specific Weekdays                     |
+|       [ ] Mon [ ] Tue [ ] Wed [ ] Thu [ ] Fri [ ] Sat [ ] Sun |
+|   ( ) Once per Week                         |
+|   ( ) Specific Calendar Dates               |
+|       [Select Dates]  [Calendar Date Picker]|
+| Start Date: [______/______/______]           |
+| Color: [Color Picker]                        |
++---------------------------------------------+
+|            [Save]           [Cancel]         |
++---------------------------------------------+
+
++-----------------------------------------------------------+
+|                   Badges & Gamification Stats             |
++-----------------------------------------------------------+
+| 🏅 5-Day Streak (Badge)                                   |
+| 🏅 10 Habits Completed (Badge)                            |
+| 🏅 Consistent User (30 Days)                              |
+| --------------------------------------------------------- |
+| XP Progress: [███████████░░░░░░░░░░░░░░░░░░░░░░░░░░░] |
+| --------------------------------------------------------- |
+| Current Level: Level 5                                    |
+| --------------------------------------------------------- |
+| Total XP: 320 / 500                                       |
++-----------------------------------------------------------+
+| [Back to Dashboard]                                       |
++-----------------------------------------------------------+
+
+
++-----------------------------------------------------------+
+| Habit Detail - Gym [X]                                   |
++-----------------------------------------------------------+
+| Frequency: Mon, Wed, Fri                                  |
+| Streak: 4 days                                            |
+| Total Completions: 20                                     |
+| --------------------------------------------------------- |
+| Habit Progress:                                           |
+| [Progress Bar showing % of habit completed]               |
+| --------------------------------------------------------- |
+| Completion History:                                       |
+| [Calendar with colored dates to represent completion]     |
+| --------------------------------------------------------- |
+| Next Habit Due: 📅 [Mon, Wed, Fri]                        |
+| --------------------------------------------------------- |
+| [Back to Dashboard]                                       |
++-----------------------------------------------------------+
+
+
+
++-----------------------------+
+| August 2025                 [X]|
++-----------------------------+
+| Sun Mon Tue Wed Thu Fri Sat |
+|      1   2   3   4   5   6 |
+|  7   8   9  10  11  12  13 |
+| 14  15  16  17  18  19  20 |
+| 21  22  23  24  25  26  27 |
+| 28  29  30  31              |
++-----------------------------+
+
+* Highlight days with scheduled habits
+* Click a date to see habits due that day and mark completion
+
+
+
+
+
+
+
+
+
+
+
+| Component     | Purpose                                |
+| ------------- | -------------------------------------- |
+| `Box`, `Flex` | Layout containers                      |
+| `Progress`    | XP bars and habit progress             |
+| `Checkbox`    | Habit status                           |
+| `Badge`       | Gamification badges                    |
+| `Modal`       | Add/Edit Habit popup                   |
+| `RadioGroup`  | Frequency selector                     |
+| `Tabs`        | Switch between Today / Week / Calendar |
+| `Tooltip`     | Hover-based detail popups              |
