@@ -1,4 +1,4 @@
-package com.habittracker.Controller;
+package com.habittracker.controller;
 
 import com.habittracker.dto.*;
 import com.habittracker.entity.User;

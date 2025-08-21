@@ -1,4 +1,4 @@
-package com.habittracker.Controller;
+package com.habittracker.controller;
 
 public class HabitLogController {
 }

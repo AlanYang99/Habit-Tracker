@@ -1,6 +1,6 @@
 package com.habittracker.service.impl;
 
-import com.habittracker.Repository.UserRepository;
+import com.habittracker.repository.UserRepository;
 import com.habittracker.dto.UserLoginRequestDto;
 import com.habittracker.dto.UserRegistrationRequestDto;
 import com.habittracker.entity.User;

@@ -1,4 +1,4 @@
-package com.habittracker.Repository;
+package com.habittracker.repository;
 
 import com.habittracker.entity.LongestStreak;
 import org.springframework.data.jpa.repository.JpaRepository;

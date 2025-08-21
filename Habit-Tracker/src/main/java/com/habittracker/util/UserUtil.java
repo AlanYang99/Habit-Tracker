@@ -1,6 +1,6 @@
 package com.habittracker.util;
 
-import com.habittracker.Repository.UserRepository;
+import com.habittracker.repository.UserRepository;
 import com.habittracker.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
