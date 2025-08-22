@@ -25,31 +25,23 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<UserRegistrationResponseDto> registerUser(@Valid @RequestBody final UserRegistrationRequestDto userRegistrationDto) {
         try {
-            userService.createUser(userRegistrationDto);
+            final UserDto userDto = userService.createUser(userRegistrationDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new UserRegistrationResponseDto("User registered successfully",userDto));
         } catch (CompromisedPasswordException e) {
             return ResponseEntity.badRequest().body(new UserRegistrationResponseDto("The provided password is compromised and should not be used.", null));
         } catch (AccountAlreadyExistsException e) {
             return ResponseEntity.badRequest().body(new UserRegistrationResponseDto("An account with the provided username or email already exists", null));
         }
-        final UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userRegistrationDto, userDto);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(new UserRegistrationResponseDto("User registered successfully",userDto));
     }
 
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponseDto> loginUser(@Valid @RequestBody final UserLoginRequestDto userLoginRequestDto) {
-        String jwtToken;
         try {
-            jwtToken = userService.loginUser(userLoginRequestDto); // Maybe consider bundling up the JWT token and user details in a response DTO later
+            final String jwtToken = userService.loginUser(userLoginRequestDto); // Maybe consider bundling up the JWT token and user details in a response DTO later
+            final UserDto userDto = userService.getUserSummary(userLoginRequestDto);
+            return ResponseEntity.ok().body(new UserLoginResponseDto("Login has been successful", jwtToken, userDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new UserLoginResponseDto("The provided username and/or password is incorrect", null,null));
         }
-
-        final UserDto userDto = new UserDto();
-        final User user = userService.getUser(userLoginRequestDto.getUsername());
-        BeanUtils.copyProperties(user, userDto);
-
-        return ResponseEntity.ok().body(new UserLoginResponseDto("The provided password is compromised and should not be used.", jwtToken, userDto));
     }
 }

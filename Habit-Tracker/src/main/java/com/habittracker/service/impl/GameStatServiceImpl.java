@@ -1,10 +1,12 @@
 package com.habittracker.service.impl;
 
+import com.habittracker.entity.GameStats;
 import com.habittracker.repository.GameStatRepository;
 import com.habittracker.entity.User;
 import com.habittracker.service.IGameStatService;
 import com.habittracker.util.UserUtil;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import static com.habittracker.constants.ApplicationConstants.EXPERIENCE_LEVEL_MAP;
@@ -29,4 +31,18 @@ public class GameStatServiceImpl implements IGameStatService {
 
         gameStatRepository.save(currentUser.getGameStats());
     }
+
+    @Override
+    public GameStats getGameStatForCurrentUser() {
+        final User currentUser = userUtil.getCurrentUser();
+
+        GameStats stats = currentUser.getGameStats();
+        if (stats != null && Hibernate.isInitialized(stats)) {
+            return stats;
+        }
+
+        return gameStatRepository.findByUserId(currentUser.getId());
+    }
+
+
 }

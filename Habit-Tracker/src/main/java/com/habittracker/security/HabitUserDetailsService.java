@@ -14,8 +14,6 @@ public class HabitUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        System.out.println(userRepository.findAll());
-
         return userRepository.findByUsername(username).map(HabitUserDetails::new).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 }

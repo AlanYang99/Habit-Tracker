@@ -13,8 +13,8 @@ public class DailyHabitSpecification {
 
     public static Specification<DailyHabit> validDate(final LocalDate localDate) {
         return (root, query, criteriaBuilder) -> {
-            final Predicate startDatePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("start_date"), localDate);
-            final Predicate endDatePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("end_date"), localDate);
+            final Predicate startDatePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("startDate"), localDate);
+            final Predicate endDatePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), localDate);
 
             return criteriaBuilder.and(startDatePredicate, endDatePredicate);
         };

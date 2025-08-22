@@ -13,8 +13,8 @@ public class WeeklyHabitSpecification {
         return (root, query, criteriaBuilder) -> {
             final DayOfWeek dayOfWeek = localDate.getDayOfWeek();
 
-            final Predicate startDatePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("start_date"), localDate);
-            final Predicate endDatePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("end_date"), localDate);
+            final Predicate startDatePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("startDate"), localDate);
+            final Predicate endDatePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), localDate);
             final Predicate dayOfWeekPredicate = criteriaBuilder.isMember(dayOfWeek, root.get("daysOfWeek"));
 
             return criteriaBuilder.and(startDatePredicate, endDatePredicate, dayOfWeekPredicate);

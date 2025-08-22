@@ -1,11 +1,14 @@
 package com.habittracker.service.impl;
 
+import com.habittracker.dto.UserDto;
+import com.habittracker.mapper.UserMapper;
 import com.habittracker.repository.UserRepository;
 import com.habittracker.dto.UserLoginRequestDto;
 import com.habittracker.dto.UserRegistrationRequestDto;
 import com.habittracker.entity.User;
 import com.habittracker.exception.AccountAlreadyExistsException;
 import com.habittracker.security.HabitUserDetails;
+import com.habittracker.service.IStreakService;
 import com.habittracker.service.IUserService;
 import com.habittracker.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,16 +18,20 @@ import org.springframework.security.authentication.password.CompromisedPasswordE
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserService {
 
     private final CompromisedPasswordChecker compromisedPasswordChecker;
     private final PasswordEncoder passwordEncoder;
+    private final IStreakService streakService;
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    public void createUser(final UserRegistrationRequestDto userRegistrationRequestDto) {
+    public UserDto createUser(final UserRegistrationRequestDto userRegistrationRequestDto) {
         if (compromisedPasswordChecker.check(userRegistrationRequestDto.getPassword()).isCompromised()) {
             throw new CompromisedPasswordException("The provided password is compromised and should not be used.");
         }
@@ -37,6 +44,8 @@ public class UserServiceImpl implements IUserService {
         BeanUtils.copyProperties(userRegistrationRequestDto, user);
         user.setPassword(passwordEncoder.encode(userRegistrationRequestDto.getPassword()));
         userRepository.save(user);
+
+        return userMapper.newUserDto(user);
     }
 
     public String loginUser(final UserLoginRequestDto userLoginRequestDto) {
@@ -45,6 +54,13 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
         return jwtUtil.generateToken(new HabitUserDetails(user));
+    }
+
+    public UserDto getUserSummary(final UserLoginRequestDto userLoginRequestDto) {
+        final User user = getUser(userLoginRequestDto.getUsername());
+        final Map<String, Long> userStreak = streakService.getUserStreaks();
+
+        return userMapper.mapToDto(user, userStreak);
     }
 
     public User getUser(final String username) {

@@ -71,11 +71,15 @@ public class HabitServiceImpl implements IHabitService {
             return habitRepository.findByUserId(currentUser.getId());
         }
 
-        final LocalDate date = LocalDate.parse(params.get("date"));
-
-        // At this point the only valid param is date, will update this piece of code once more valid query params exists
-        return Stream.of(getAllValidDailyHabits(currentUser, date), getAllValidWeeklyHabits(currentUser, date),
-                getAllValidCalendarHabits(currentUser, date)).flatMap(List::stream).collect(Collectors.toUnmodifiableList());
+        LocalDate date = LocalDate.parse(params.get("date"));
+        return Stream.of(
+                findHabitsBySpec(DailyHabitSpecification.userId(currentUser.getId())
+                        .and(DailyHabitSpecification.validDate(date)), dailyHabitRepository),
+                findHabitsBySpec(WeeklyHabitSpecification.userId(currentUser.getId())
+                        .and(WeeklyHabitSpecification.validDate(date)), weeklyHabitRepository),
+                findHabitsBySpec(CalendarHabitSpecification.userId(currentUser.getId())
+                        .and(CalendarHabitSpecification.validDate(date)), calendarHabitRepository)
+        ).flatMap(List::stream).collect(Collectors.toUnmodifiableList());
     }
 
     public List<DailyHabit> getAllValidDailyHabits(final User currentUser, final LocalDate date) {
@@ -105,7 +109,7 @@ public class HabitServiceImpl implements IHabitService {
         final AbstractHabit habit = habitRepository.findByIdAndUserId(habitId, currentUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Habit not found or does not belong to the user."));
 
-        if (habitLogRepository.existsByHabitIdAndDate(habitId, LocalDate.now())) {
+        if (habitLogRepository.existsByHabitIdAndCreationDate(habitId, LocalDate.now())) {
             throw new IllegalArgumentException("Habit already completed for today.");
         }
 
@@ -134,5 +138,9 @@ public class HabitServiceImpl implements IHabitService {
         final CalendarHabit calendarHabit = new CalendarHabit();
         calendarHabit.setScheduledDates(new HashSet<>(habitRequestDto.getSpecificDates()));
         return calendarHabit;
+    }
+
+    private <T extends AbstractHabit> List<T> findHabitsBySpec(Specification<T> spec, org.springframework.data.jpa.repository.JpaSpecificationExecutor<T> repo) {
+        return repo.findAll(spec);
     }
 }

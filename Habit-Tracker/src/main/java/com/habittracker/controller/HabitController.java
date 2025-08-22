@@ -40,6 +40,15 @@ public class HabitController {
         return ResponseEntity.status(HttpStatus.CREATED).body(habitResponseDto);
     }
 
+    // Put the logic of getting habits due for completion, here (habits can also be past and future, (add date query))
+//    @GetMapping
+//    public ResponseEntity<?> getDueHabits() {
+//
+//    };
+
+
+    // Gets the habits belonging to the user
+    // Consider a new get endpoint
     @GetMapping
     public ResponseEntity<?> getAllHabits(@RequestParam final Map<String, String> params) {
         List<AbstractHabit> habits;
