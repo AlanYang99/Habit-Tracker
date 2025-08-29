@@ -1,6 +1,7 @@
 package com.habittracker.mapper;
 
 import com.habittracker.dto.GameSummaryDto;
+import com.habittracker.dto.SimpleUserDto;
 import com.habittracker.dto.StreakSummaryDto;
 import com.habittracker.dto.UserDto;
 import com.habittracker.entity.Badge;
@@ -12,6 +13,10 @@ import java.util.Map;
 
 @Component
 public class UserMapper {
+
+    public SimpleUserDto mapToSimpleDto(final User user) {
+       return SimpleUserDto.builder().username(user.getUsername()).name(user.getName()).email(user.getEmail()).build();
+    }
 
     public UserDto mapToDto(final User user, final Map<String, Long> streakInfo) {
         final GameStats gameStats = user.getGameStats();

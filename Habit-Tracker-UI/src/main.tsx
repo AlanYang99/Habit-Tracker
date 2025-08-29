@@ -9,15 +9,33 @@ import {
 } from "react-router";
 import "./index.css";
 import App from "./App.tsx";
-import HomePage from "./components/pages/HomePage.tsx";
-import LoginPage from "./components/pages/LoginPage.tsx";
-import RegisterPage from "./components/pages/RegisterPage.tsx";
+import { AuthProvider } from "./store/AuthContext.tsx";
+import DashboardPage from "./pages/DashboardPage.tsx";
+import HomePage from "./pages/HomePage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import RegisterPage from "./pages/RegisterPage.tsx";
+import { dashboardLoader } from "./pages/DashboardPage.tsx";
+import { loginAction } from "./pages/LoginPage.tsx";
+import { registerAction } from "./pages/RegisterPage.tsx";
+import { Toaster } from "@/components/ui/toaster";
+import SecuredPage from "./pages/SecuredPage.tsx";
 
 const routeDefinitions = createRoutesFromElements(
   <Route path="/" element={<App />}>
     <Route index element={<HomePage />} />
-    <Route path="/login" element={<LoginPage />} />
-    <Route path="/register" element={<RegisterPage />} />
+    <Route path="/login" element={<LoginPage />} action={loginAction} />
+    <Route
+      path="/register"
+      element={<RegisterPage />}
+      action={registerAction}
+    />
+    <Route element={<SecuredPage />}>
+      <Route
+        path="/dashboard"
+        element={<DashboardPage />}
+        loader={dashboardLoader}
+      />
+    </Route>
   </Route>
 );
 
@@ -25,8 +43,11 @@ const appRouter = createBrowserRouter(routeDefinitions);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Provider themes={["light", "dark"]} defaultTheme="light">
-      <RouterProvider router={appRouter} />
-    </Provider>
+    <AuthProvider>
+      <Provider themes={["light", "dark"]} defaultTheme="light">
+        <RouterProvider router={appRouter} />
+        <Toaster />
+      </Provider>
+    </AuthProvider>
   </StrictMode>
 );

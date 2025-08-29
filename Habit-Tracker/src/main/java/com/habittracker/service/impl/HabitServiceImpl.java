@@ -1,5 +1,7 @@
 package com.habittracker.service.impl;
 
+import com.habittracker.dto.DueHabitDto;
+import com.habittracker.mapper.DueHabitMapper;
 import com.habittracker.repository.*;
 import com.habittracker.dto.HabitRequestDto;
 import com.habittracker.entity.*;
@@ -22,6 +24,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +40,7 @@ public class HabitServiceImpl implements IHabitService {
     private final IGameStatService gameStatService;
     private final IStreakService streakService;
     private final UserUtil userUtil;
+    private final DueHabitMapper dueHabitMapper;
 
     @Override
     public AbstractHabit createHabit(final HabitRequestDto habitRequestDto) {
@@ -64,22 +68,39 @@ public class HabitServiceImpl implements IHabitService {
     }
 
     @Override
-    public List<AbstractHabit> getAllHabitsForCurrentUser(final Map<String, String> params) {
+    public List<AbstractHabit> getAllHabitsForCurrentUser(Map<String, String> params) {
+        return List.of();
+    }
+
+    @Override
+    public List<DueHabitDto> getDueHabits(final Map<String, String> params) {
         final User currentUser = userUtil.getCurrentUser();
 
-        if (params.isEmpty()) {
-            return habitRepository.findByUserId(currentUser.getId());
-        }
-
-        LocalDate date = LocalDate.parse(params.get("date"));
-        return Stream.of(
+        final LocalDate today = LocalDate.now();
+        final LocalDate date = params.containsKey("date") ? LocalDate.parse(params.get("date")) : today;
+        final List<AbstractHabit> habits = Stream.of(
                 findHabitsBySpec(DailyHabitSpecification.userId(currentUser.getId())
                         .and(DailyHabitSpecification.validDate(date)), dailyHabitRepository),
                 findHabitsBySpec(WeeklyHabitSpecification.userId(currentUser.getId())
                         .and(WeeklyHabitSpecification.validDate(date)), weeklyHabitRepository),
                 findHabitsBySpec(CalendarHabitSpecification.userId(currentUser.getId())
-                        .and(CalendarHabitSpecification.validDate(date)), calendarHabitRepository)
-        ).flatMap(List::stream).collect(Collectors.toUnmodifiableList());
+                        .and(CalendarHabitSpecification.validDate(date)), calendarHabitRepository))
+                .flatMap(List::stream).collect(Collectors.toUnmodifiableList());
+
+        final Map<Long, HabitLog> habitLogsMap = habitLogRepository.findByUserIdAndCreationDate(currentUser.getId(), date).stream()
+                .collect(Collectors.toMap(log -> log.getHabit().getId(), Function.identity()));
+
+        List<DueHabitDto> dueHabits;
+        if (date.isEqual(today)) {
+            dueHabits = habits.stream().map(habit -> (dueHabitMapper.mapToDto(habit, habitLogsMap.containsKey(habit.getId())))).toList();
+        } else if (date.isAfter(today)) {
+            dueHabits = habits.stream().map(habit -> (dueHabitMapper.mapToDto(habit, false))).toList();
+        } else {
+            dueHabits = habits.stream().map(habit -> (
+               dueHabitMapper.mapToDto(habit, habitLogsMap.get(habit.getId()).isCompleted()))).toList();
+        }
+
+        return dueHabits;
     }
 
     public List<DailyHabit> getAllValidDailyHabits(final User currentUser, final LocalDate date) {

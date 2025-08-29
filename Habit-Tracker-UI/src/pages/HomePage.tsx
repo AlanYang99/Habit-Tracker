@@ -1,8 +1,10 @@
 import { Center, Heading, VStack, Text } from "@chakra-ui/react";
-import LinkButton from "../LinkButton";
+import LinkButton from "../components/LinkButton";
 import { Link as RouterLink } from "react-router";
+import { useAuth } from "@/store/AuthContext";
 
 export default function HomePage() {
+  const { isAuthenticated } = useAuth();
   return (
     <Center
       h="100vh"
@@ -35,7 +37,7 @@ export default function HomePage() {
 
         <LinkButton
           as={RouterLink}
-          to="/login"
+          to={isAuthenticated ? "/dashboard" : "/login"}
           size="lg"
           colorPalette="teal"
           variant="solid"

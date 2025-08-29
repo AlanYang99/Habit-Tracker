@@ -9,4 +9,5 @@ import java.util.List;
 public interface HabitLogRepository extends JpaRepository<HabitLog, Long> {
     boolean existsByHabitIdAndCreationDate(final Long habitId, final LocalDate date);
     List<HabitLog> findByUserId(final Long userId);
+    List<HabitLog> findByUserIdAndCreationDate(Long userId, LocalDate creationDate);
 }

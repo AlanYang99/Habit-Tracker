@@ -14,8 +14,7 @@ public class UserUtil {
     private final UserRepository userRepository;
 
     public User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        authentication.getName();
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + authentication.getName()));
     }

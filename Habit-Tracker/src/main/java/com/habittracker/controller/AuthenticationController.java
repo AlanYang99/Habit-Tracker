@@ -10,10 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.password.CompromisedPasswordException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -27,10 +24,10 @@ public class AuthenticationController {
         try {
             final UserDto userDto = userService.createUser(userRegistrationDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserRegistrationResponseDto("User registered successfully",userDto));
-        } catch (CompromisedPasswordException e) {
-            return ResponseEntity.badRequest().body(new UserRegistrationResponseDto("The provided password is compromised and should not be used.", null));
         } catch (AccountAlreadyExistsException e) {
             return ResponseEntity.badRequest().body(new UserRegistrationResponseDto("An account with the provided username or email already exists", null));
+        } catch (CompromisedPasswordException e) {
+            return ResponseEntity.badRequest().body(new UserRegistrationResponseDto("The provided password is compromised and should not be used.", null));
         }
     }
 
@@ -38,10 +35,20 @@ public class AuthenticationController {
     public ResponseEntity<UserLoginResponseDto> loginUser(@Valid @RequestBody final UserLoginRequestDto userLoginRequestDto) {
         try {
             final String jwtToken = userService.loginUser(userLoginRequestDto); // Maybe consider bundling up the JWT token and user details in a response DTO later
-            final UserDto userDto = userService.getUserSummary(userLoginRequestDto);
+            final SimpleUserDto userDto = userService.getSimpleUserSummary(userLoginRequestDto);
             return ResponseEntity.ok().body(new UserLoginResponseDto("Login has been successful", jwtToken, userDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new UserLoginResponseDto("The provided username and/or password is incorrect", null,null));
+        }
+    }
+
+    @GetMapping("/user-summary")
+    public ResponseEntity<?> getUserSummary() {
+        try {
+            final UserDto userDto = userService.getUserSummary();
+            return ResponseEntity.ok(userDto);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Couldn't return information for user, or user is not logged in");
         }
     }
 }

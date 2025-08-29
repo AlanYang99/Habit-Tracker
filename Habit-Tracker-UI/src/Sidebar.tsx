@@ -6,7 +6,7 @@ export default function SideBar() {
       <Flex
         as="aside"
         position="sticky"
-        w="13vw"
+        w={["80px", "100px", "120px", "140px"]}
         h="full"
         bg="gray.800"
         color="white"

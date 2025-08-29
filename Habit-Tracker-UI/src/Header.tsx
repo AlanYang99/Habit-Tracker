@@ -6,13 +6,21 @@ import {
   Menu,
   Button,
   Portal,
-  Heading,
 } from "@chakra-ui/react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CgProfile } from "react-icons/cg";
 import { IoFitness } from "react-icons/io5";
+import { useAuth } from "./store/AuthContext";
+import { useNavigate } from "react-router";
 
 export default function Header() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const logoutUser = () => {
+    logout();
+    navigate("/");
+  };
   return (
     <>
       <Flex
@@ -35,18 +43,8 @@ export default function Header() {
           <IoFitness />
         </IconButton>
         <Spacer />
-        {/* <IconButton size="sm" m={4}>
-          <LuArrowBigDown color="teal" />
-        </IconButton>
-
-        <IconButton size="sm" m={4}>
-          <LuArrowBigDown color="teal" />
-        </IconButton> */}
 
         <Button colorScheme="teal" variant="ghost">
-          Call us
-        </Button>
-        <Button colorScheme="teal" variant="ghost" m={1}>
           Call us
         </Button>
 
@@ -62,7 +60,9 @@ export default function Header() {
               <Menu.Positioner>
                 <Menu.Content>
                   <Menu.Item value="View Profile">View Profile</Menu.Item>
-                  <Menu.Item value="Logout">Logout</Menu.Item>
+                  <Menu.Item value="Logout" onClick={logoutUser}>
+                    Logout
+                  </Menu.Item>
                 </Menu.Content>
               </Menu.Positioner>
             </Portal>

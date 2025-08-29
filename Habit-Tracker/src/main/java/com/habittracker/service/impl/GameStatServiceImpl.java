@@ -43,6 +43,4 @@ public class GameStatServiceImpl implements IGameStatService {
 
         return gameStatRepository.findByUserId(currentUser.getId());
     }
-
-
 }
