@@ -1,4 +1,4 @@
-import { Flex, Grid, GridItem } from "@chakra-ui/react";
+import { Flex, Grid, GridItem, Box } from "@chakra-ui/react";
 import { useLoaderData } from "react-router";
 import apiClient from "@/api/apiClient";
 import type { AxiosError } from "axios";
@@ -37,76 +37,89 @@ export default function DashboardPage() {
 
   return (
     <>
-      <Flex direction="column" minH="100vh" minW="100vw" overflowY="auto">
+      <Flex direction="column" minH="100vh" minW="100vw">
         <Header />
-        <Flex flex="1" overflowY="auto">
+        <Flex flex="1" overflow="hidden">
           <SideBar />
 
-          <Grid
-            bgGradient="to-br"
-            gradientFrom="purple.600"
-            gradientVia="teal.400"
-            gradientTo="blue.200"
-            w="100%"
-            flex="1"
-            overflow="visible"
-            gap={4}
-            templateColumns={{
-              base: "repeat(2, 1fr)", // 👈 2 columns on mobile
-              xl: "repeat(4, 1fr)", // 👈 4 columns on medium screens and up
-            }}
-            templateAreas={{
-              base: `
+          <Box flex="1" overflowY="auto">
+            <Grid
+              bgGradient="to-br"
+              gradientFrom="purple.600"
+              gradientVia="teal.400"
+              gradientTo="blue.200"
+              w="100%"
+              minH="100%"
+              flex="1"
+              gap={4}
+              templateColumns={{
+                base: "repeat(2, 1fr)", // 👈 2 columns on mobile
+                xl: "repeat(4, 1fr)", // 👈 4 columns on medium screens and up
+              }}
+              templateAreas={{
+                base: `
                     "welcome welcome"
                     "summary summary"
                     "habits habits"
-                    "timeline timeline"
                     "bar circle"
+                    "timeline timeline"
                   `,
-              xl: `
+                xl: `
+                    "welcome welcome summary summary"
+                    "bar    bar    circle circle"
+                    "habits habits habits timeline"
+                    "habits habits habits timeline"
+                  `,
+                "2xl": `
                     "welcome welcome summary summary"
                     "habits habits bar timeline"
                     "habits habits circle timeline"
                   `,
-            }}
-          >
-            <GridItem area="welcome" display="flex" justifyContent="center">
-              <Welcome user={userData} />
-            </GridItem>
-            <GridItem area="summary" display="flex" justifyContent="center">
-              <UserStatList
-                user={userData}
-                statList={[
-                  {
-                    title: "Current Streak",
-                    value: userData?.streakSummary?.currentStreak,
-                    icon: <ImFire />,
-                  },
-                  {
-                    title: "Habits Completed",
-                    value: "10",
-                    icon: <FaHeartCircleCheck />,
-                  },
-                  { title: "Badges Earned", value: "0", icon: <SlBadge /> },
-                ]}
-              />
-            </GridItem>
-            <GridItem area="habits" display="flex" justifyContent="center">
-              <HabitList habits={dueHabits} />
-            </GridItem>
+              }}
+            >
+              <GridItem area="welcome" display="flex" justifyContent="center">
+                <Welcome user={userData} />
+              </GridItem>
+              <GridItem area="summary" display="flex" justifyContent="center">
+                <UserStatList
+                  user={userData}
+                  statList={[
+                    {
+                      title: "Current Streak",
+                      value: userData?.streakSummary?.currentStreak,
+                      icon: <ImFire />,
+                    },
+                    {
+                      title: "Habits Completed",
+                      value: "10",
+                      icon: <FaHeartCircleCheck />,
+                    },
+                    { title: "Badges Earned", value: "0", icon: <SlBadge /> },
+                  ]}
+                />
+              </GridItem>
+              <GridItem
+                area="habits"
+                display="flex"
+                justifyContent="center"
+                overflow="auto"
+              >
+                <HabitList habits={dueHabits} />
+              </GridItem>
 
-            <GridItem area="bar" display="flex" justifyContent="center">
-              <WeeklyStatus />
-            </GridItem>
+              <GridItem area="bar" display="flex" justifyContent="center">
+                <WeeklyStatus />
+              </GridItem>
 
-            <GridItem area="circle" display="flex" justifyContent="center">
-              <DailyProgressCircle />
-            </GridItem>
+              <GridItem area="circle" display="flex" justifyContent="center">
+                <DailyProgressCircle />
+              </GridItem>
 
-            <GridItem area="timeline" display="flex">
-              <UserActions />
-            </GridItem>
-          </Grid>
+              <GridItem area="timeline" display="flex">
+                <UserActions />
+              </GridItem>
+            </Grid>
+          </Box>
         </Flex>
       </Flex>
     </>

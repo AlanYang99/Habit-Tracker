@@ -21,14 +21,14 @@ export default function WeeklyStatus() {
 
   return (
     <Card.Root
-      maxW="sm"
       background="white/60"
       rounded="4xl"
       ml="20px"
       mr="20px"
       border="2px"
       h="290px"
-      width="450px"
+      w="100%"
+      maxW={{ base: "600px", lg: "600px", "2xl": "450px" }}
       display="flex"
       flexDirection="column"
       justifyContent="flex-end"
@@ -38,7 +38,16 @@ export default function WeeklyStatus() {
         <Card.Title>Weekly habit completion status</Card.Title>
       </Card.Header>
       <Card.Body>
-        <Chart.Root h="200px" w="400px" chart={chart} mr={3}>
+        <Chart.Root
+          h="200px"
+          width={{
+            base: "400px",
+            lg: "480px",
+            "2xl": "400px",
+          }}
+          chart={chart}
+          mr={3}
+        >
           <BarChart
             stackOffset="none"
             data={chart.data}

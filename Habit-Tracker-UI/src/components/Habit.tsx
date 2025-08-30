@@ -27,13 +27,17 @@ export default function Habit({ key, habit }: HabitProps) {
       size="sm"
       rounded="3xl"
       width="100%"
-      mr="20px"
-      ml="20px"
+      m={4}
     >
       {/* <CheckboxCard.HiddenInput /> */}
       <CheckboxCard.Control
         display="grid"
-        gridTemplateColumns="10% 50% 15% 20%"
+        gridTemplateColumns={{
+          base: "10% 50% 20% 15%",
+          lg: "10% 40% 25% 20%",
+          xl: "10% 40% 25% 20%",
+          "2xl": "10% 50% 20% 15%",
+        }}
         alignItems="center"
         gap={2}
         p={2}

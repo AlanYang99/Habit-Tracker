@@ -15,6 +15,7 @@ export default function UserActions() {
       alignItems="center"
       mb={4}
       mr={4}
+      ml={4}
     >
       <Card.Title mt={7}>Recent User Actions</Card.Title>
       <Timeline.Root maxW="600px" m={10}>

@@ -1,5 +1,5 @@
 import Habit from "./Habit";
-import { Box, Heading, Text, Center } from "@chakra-ui/react";
+import { Box, Heading, Text, Center, VStack } from "@chakra-ui/react";
 
 interface HabitProps {
   name: string;
@@ -12,6 +12,11 @@ interface HabitPropsListProps {
 }
 
 export default function HabitList({ habits }: HabitPropsListProps) {
+  const mockhabit = {
+    name: "hello",
+    description: "hello",
+    completionStatus: false,
+  };
   return (
     <Box
       ml="20px"
@@ -30,13 +35,21 @@ export default function HabitList({ habits }: HabitPropsListProps) {
       </Heading>
 
       {Array.isArray(habits) && habits.length > 0 ? (
-        habits.map((habit: HabitProps, index: number) => (
-          <Habit key={index} habit={habit} />
-        ))
+        <VStack mx={6}>
+          {habits.map((habit, index) => (
+            <Habit key={index} habit={habit} />
+          ))}
+        </VStack>
       ) : (
-        <Center>
-          <Text>No habits due today</Text>
-        </Center>
+        <>
+          <Center>
+            <Text>No habits due today</Text>
+          </Center>
+          <VStack mx={6}>
+            {" "}
+            <Habit key={3} habit={mockhabit} />
+          </VStack>
+        </>
       )}
     </Box>
   );
