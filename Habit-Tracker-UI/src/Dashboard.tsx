@@ -1,7 +1,7 @@
 import { Flex, Box, VStack, HStack, Grid, GridItem } from "@chakra-ui/react";
 import Header from "./Header";
 import SideBar from "./Sidebar";
-import Welcome from "./Welcome";
+import Welcome from "./components/Welcome";
 import GameSummary from "./GameSummary";
 import Habits from "./Habits";
 import GameStatsSummary from "./GameStatsSummary";

@@ -1,4 +1,4 @@
-import { Box, Heading, HStack, Icon } from "@chakra-ui/react";
+import { Heading, HStack, Icon } from "@chakra-ui/react";
 import { GiSpikedDragonHead } from "react-icons/gi";
 
 interface WelcomeProps {
