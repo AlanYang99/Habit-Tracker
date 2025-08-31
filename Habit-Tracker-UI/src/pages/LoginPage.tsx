@@ -94,10 +94,10 @@ export default function LoginPage() {
             </Button>
             <Separator />
             <Text textAlign="center">
-              Don't have an account? Join us! Register{" "}
+              Don't have an account? Join us! Register
               <TextLink to="/register" colorPalette="red">
                 here
-              </TextLink>{" "}
+              </TextLink>
               to get started.
             </Text>
           </Fieldset.Root>

@@ -1,39 +1,27 @@
 package com.habittracker.mapper;
 
 import com.habittracker.dto.HabitDto;
+import com.habittracker.entity.AbstractHabit;
 import com.habittracker.entity.CalendarHabit;
-import com.habittracker.entity.DailyHabit;
 import com.habittracker.entity.WeeklyHabit;
 import org.springframework.stereotype.Component;
 
 @Component
 public class HabitMapper {
-    public HabitDto mapToDto(final DailyHabit habit) {
-        return HabitDto.builder()
+    public HabitDto mapToDto(final AbstractHabit habit) {
+        HabitDto.HabitDtoBuilder builder = HabitDto.builder()
+                .id(habit.getId())
                 .name(habit.getName())
                 .description(habit.getDescription())
                 .startDate(habit.getStartDate())
-                .endDate(habit.getEndDate())
-                .build();
-    }
+                .endDate(habit.getEndDate());
 
-    public HabitDto mapToDto(final WeeklyHabit habit) {
-        return HabitDto.builder()
-                .name(habit.getName())
-                .description(habit.getDescription())
-                .startDate(habit.getStartDate())
-                .endDate(habit.getEndDate())
-                .daysOfWeek(habit.getDaysOfWeek())
-                .build();
-    }
+        if (habit instanceof WeeklyHabit weekly) {
+            builder.daysOfWeek(weekly.getDaysOfWeek());
+        } else if (habit instanceof CalendarHabit calendar) {
+            builder.scheduledDates(calendar.getScheduledDates());
+        }
 
-    public HabitDto mapToDto(final CalendarHabit habit) {
-        return HabitDto.builder()
-                .name(habit.getName())
-                .description(habit.getDescription())
-                .startDate(habit.getStartDate())
-                .endDate(habit.getEndDate())
-                .scheduledDates(habit.getScheduledDates())
-                .build();
+        return builder.build();
     }
 }

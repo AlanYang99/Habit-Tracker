@@ -84,7 +84,7 @@ public class UserServiceImpl implements IUserService {
         final GameStats stats = new GameStats();
         stats.setUser(user);
         stats.setUserExp(0);
-        stats.setUserLevel(0);
+        stats.setUserLevel(1);
 
         final LocalDate today = LocalDate.now();
         final CurrentStreak currentStreak = new CurrentStreak();

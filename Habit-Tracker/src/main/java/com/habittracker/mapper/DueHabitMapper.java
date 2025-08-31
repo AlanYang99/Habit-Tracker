@@ -9,6 +9,7 @@ public class DueHabitMapper {
 
     public DueHabitDto mapToDto(final AbstractHabit habit, final boolean completionStatus) {
         return DueHabitDto.builder()
+                .habitId(habit.getId())
                 .name(habit.getName())
                 .description(habit.getDescription())
                 .completionStatus(completionStatus)

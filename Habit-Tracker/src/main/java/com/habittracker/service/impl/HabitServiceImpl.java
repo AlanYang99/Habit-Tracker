@@ -1,7 +1,10 @@
 package com.habittracker.service.impl;
 
 import com.habittracker.dto.DueHabitDto;
+import com.habittracker.dto.HabitDto;
+import com.habittracker.factory.HabitFactory;
 import com.habittracker.mapper.DueHabitMapper;
+import com.habittracker.mapper.HabitMapper;
 import com.habittracker.repository.*;
 import com.habittracker.dto.HabitRequestDto;
 import com.habittracker.entity.*;
@@ -19,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -40,36 +44,26 @@ public class HabitServiceImpl implements IHabitService {
     private final IGameStatService gameStatService;
     private final IStreakService streakService;
     private final UserUtil userUtil;
+    private final HabitMapper habitMapper;
     private final DueHabitMapper dueHabitMapper;
 
     @Override
-    public AbstractHabit createHabit(final HabitRequestDto habitRequestDto) {
+    public HabitDto createHabit(final HabitRequestDto habitRequestDto) {
         final User currentUser = userUtil.getCurrentUser();
         if (habitRepository.existsByNameAndUserId(habitRequestDto.getName(), currentUser.getId())) {
             throw new IllegalArgumentException("Habit with this name already exists for the user.");
         }
 
-        final AbstractHabit habit;
-
-        if (habitRequestDto.getFrequency() == HabitFrequency.WEEKLY) {
-            habit = createWeeklyHabit(habitRequestDto);
-        } else if (habitRequestDto.getFrequency() == HabitFrequency.CALENDAR) {
-            habit = createCalendarHabit(habitRequestDto);
-        } else {
-            habit = createDailyHabit();
-        }
-
-        // Upgrade to factory pattern after
-        BeanUtils.copyProperties(habitRequestDto, habit);
+        final AbstractHabit habit = HabitFactory.createHabit(habitRequestDto);
         habit.setUser(currentUser);
+        // Upgrade to factory pattern after
         habitRepository.save(habit);
-
-        return habit;
+        return habitMapper.mapToDto(habit);
     }
 
     @Override
-    public List<AbstractHabit> getAllHabitsForCurrentUser(Map<String, String> params) {
-        return List.of();
+    public List<HabitDto> getAllHabitsForCurrentUser(final Map<String, String> params) {
+        return habitRepository.findByUserId(userUtil.getCurrentUser().getId()).stream().map(habitMapper::mapToDto).toList();
     }
 
     @Override
@@ -125,6 +119,7 @@ public class HabitServiceImpl implements IHabitService {
     }
 
     @Override
+    @Transactional
     public void completeHabit(final Long habitId) {
         final User currentUser = userUtil.getCurrentUser();
         final AbstractHabit habit = habitRepository.findByIdAndUserId(habitId, currentUser.getId())

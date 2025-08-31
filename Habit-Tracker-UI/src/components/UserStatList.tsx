@@ -73,7 +73,7 @@ export default function UserStatList({ user, statList }: Props) {
               <Progress.Range />
             </Progress.Track>
             <Progress.ValueText>
-              {user?.gameSummary?.experience / 322}
+              {((user?.gameSummary?.experience / 322) * 100).toFixed(2)}%
             </Progress.ValueText>
           </HStack>
         </Progress.Root>

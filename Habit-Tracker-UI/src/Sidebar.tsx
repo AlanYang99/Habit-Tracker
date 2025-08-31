@@ -37,7 +37,7 @@ export default function SideBar() {
           mb={2}
           color="gray.200"
           onClick={() => {
-            navigate("/due");
+            navigate("/dueHabits");
           }}
         >
           <RiMailLine /> Due Habits

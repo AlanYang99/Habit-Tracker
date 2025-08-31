@@ -7,20 +7,39 @@ import {
   Portal,
   CloseButton,
 } from "@chakra-ui/react";
+import { useRevalidator } from "react-router";
+
+import apiClient from "@/api/apiClient";
+import { useState } from "react";
 
 type HabitProps = {
   key: React.Key;
   habit: {
+    habitId: number;
     name: string;
     description: string;
     completionStatus: boolean;
   };
 };
 
-export default function Habit({ key, habit }: HabitProps) {
+export default function Habit({ habit }: HabitProps) {
+  const revalidator = useRevalidator();
+  const [open, setOpen] = useState(false);
+
+  const completeHabit = async () => {
+    try {
+      await apiClient.post(`/habit/${habit.habitId}/complete`);
+      setOpen(false);
+      revalidator.revalidate();
+    } catch (error) {
+      console.error("Failed to complete habit:", error);
+      throw error;
+    }
+  };
+
   return (
     <CheckboxCard.Root
-      key={key}
+      key={habit.habitId}
       variant="outline"
       colorPalette="green"
       boxShadow="md"
@@ -67,7 +86,7 @@ export default function Habit({ key, habit }: HabitProps) {
           {habit.completionStatus ? "Complete" : "Incomplete"}
         </Status.Root>
 
-        <Dialog.Root>
+        <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
           <Dialog.Trigger asChild>
             <Button
               variant="outline"
@@ -94,7 +113,13 @@ export default function Habit({ key, habit }: HabitProps) {
                   <Dialog.ActionTrigger asChild>
                     <Button variant="outline">Cancel</Button>
                   </Dialog.ActionTrigger>
-                  <Button>Complete</Button>
+                  <Button
+                    onClick={() => {
+                      completeHabit();
+                    }}
+                  >
+                    Complete
+                  </Button>
                 </Dialog.Footer>
                 <Dialog.CloseTrigger asChild>
                   <CloseButton size="sm" />

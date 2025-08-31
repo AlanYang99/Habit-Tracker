@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class DueHabitDto {
+    private long habitId;
     private String name;
     private String description;
     private boolean completionStatus;

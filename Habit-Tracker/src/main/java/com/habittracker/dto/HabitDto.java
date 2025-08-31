@@ -10,6 +10,7 @@ import java.util.Set;
 @Data
 @Builder
 public class HabitDto {
+    private long id;
     private String name;
     private String description;
     private LocalDate startDate;
