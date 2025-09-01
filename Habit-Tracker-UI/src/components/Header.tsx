@@ -10,7 +10,7 @@ import {
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { CgProfile } from "react-icons/cg";
 import { IoFitness } from "react-icons/io5";
-import { useAuth } from "./store/AuthContext";
+import { useAuth } from "../store/AuthContext";
 import { useNavigate } from "react-router";
 
 export default function Header() {

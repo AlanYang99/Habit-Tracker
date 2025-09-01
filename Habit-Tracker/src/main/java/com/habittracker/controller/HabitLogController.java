@@ -1,7 +1,6 @@
 package com.habittracker.controller;
 
 import com.habittracker.service.IHabitLogService;
-import com.habittracker.service.impl.HabitLogServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

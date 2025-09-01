@@ -59,7 +59,7 @@ export default function UserStatList({ user, statList }: Props) {
         </HStack>
         <Progress.Root
           width={["420px", "490px", "420px", "490px"]}
-          defaultValue={user?.gameSummary?.experience / 322}
+          defaultValue={(user?.gameSummary?.experience / 322) * 100}
           colorPalette="green"
           variant="subtle"
           size="xl"

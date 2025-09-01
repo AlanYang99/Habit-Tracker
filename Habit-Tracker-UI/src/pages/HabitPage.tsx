@@ -1,21 +1,14 @@
 import {
-  Flex,
-  Grid,
-  GridItem,
   Box,
-  Menu,
-  Avatar,
   Portal,
   Button,
   Field,
   Stack,
-  Separator,
   Input,
   Dialog,
   NativeSelect,
   For,
   SimpleGrid,
-  HStack,
   Checkbox,
   Heading,
   Fieldset,
@@ -23,18 +16,12 @@ import {
   Text,
   Image,
 } from "@chakra-ui/react";
-import {
-  Form,
-  useActionData,
-  useNavigation,
-  useNavigate,
-  useSubmit,
-} from "react-router";
+import { Form, useActionData } from "react-router";
 import { useLoaderData } from "react-router";
 import apiClient from "@/api/apiClient";
 import type { AxiosError } from "axios";
 import { useEffect, useState } from "react";
-import DatePicker, { DateObject, type Value } from "react-multi-date-picker";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 
 interface HabitProps {
   id: number;
@@ -64,7 +51,17 @@ type HabitCardCombinedProps = HabitCardProps & { m?: number };
 const FREQUENCY_OPTIONS = [
   { label: "Daily", key: "DAILY" },
   { label: "Weekly", key: "WEEKLY" },
-  { label: "Certain Days", key: "CALENDAR_DAY" },
+  { label: "Certain Days", key: "CALENDAR" },
+];
+
+const DAY_OPTIONS = [
+  { label: "Monday", key: "MONDAY" },
+  { label: "Tuesday", key: "TUESDAY" },
+  { label: "Wednesday", key: "WEDNESDAY" },
+  { label: "Thursday", key: "THURSDAY" },
+  { label: "Friday", key: "FRIDAY" },
+  { label: "Saturday", key: "SATURDAY" },
+  { label: "Sunday", key: "SUNDAY" },
 ];
 
 export default function HabitPage() {
@@ -83,16 +80,6 @@ export default function HabitPage() {
     setOpen(false);
     console.log(habitsData);
   }, [actionData]);
-
-  const daysOfWeek = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
 
   const toggleDay = (day: string) => {
     setDays((prev) =>
@@ -155,7 +142,7 @@ export default function HabitPage() {
                           <NativeSelect.Indicator />
                         </NativeSelect.Root>
                       </Field.Root>
-                      {habitType !== "Certain Days" && (
+                      {habitType !== "CALENDAR" && (
                         <>
                           <Field.Root>
                             <Field.Label>Start Date</Field.Label>
@@ -175,21 +162,25 @@ export default function HabitPage() {
                           </Field.Root>
                         </>
                       )}
-                      {habitType === "Weekly" && (
+                      {habitType === "WEEKLY" && (
                         <SimpleGrid columns={[2, 3]} w="100%">
-                          <For each={daysOfWeek}>
+                          <For each={DAY_OPTIONS}>
                             {(day) => {
-                              const isChecked = days.includes(day);
+                              const isChecked = days.includes(day.key);
                               return (
-                                <Stack align="flex-start" flex="1" key={day}>
+                                <Stack
+                                  align="flex-start"
+                                  flex="1"
+                                  key={day.key}
+                                >
                                   <Checkbox.Root
                                     m={1}
                                     checked={isChecked}
-                                    onCheckedChange={() => toggleDay(day)}
+                                    onCheckedChange={() => toggleDay(day.key)}
                                   >
                                     <Checkbox.HiddenInput />
                                     <Checkbox.Control />
-                                    <Checkbox.Label>{day}</Checkbox.Label>
+                                    <Checkbox.Label>{day.label}</Checkbox.Label>
                                   </Checkbox.Root>
                                 </Stack>
                               );
@@ -206,7 +197,7 @@ export default function HabitPage() {
                         />
                       ))}
 
-                      {habitType === "Certain Days" && (
+                      {habitType === "CALENDAR" && (
                         <Field.Root>
                           <Field.Label>Select End Dates</Field.Label>
                           <Stack>
@@ -300,8 +291,8 @@ export async function addHabitAction({ request }: { request: Request }) {
     startDate: formData.get("start-date"),
     endDate: formData.get("end-date"),
     description: formData.get("description"),
-    dates: formData.get("dates"),
-    days: formData.getAll("daysOfWeek[]"),
+    specificDates: (formData.get("dates") as string)?.split(","),
+    daysOfWeek: formData.getAll("daysOfWeek[]"),
   };
 
   console.log(habitData);
@@ -325,7 +316,7 @@ const HabitCard = ({ habit, m = 8 }: HabitCardCombinedProps) => {
     <Card.Root maxW="sm" overflow="hidden" m={m}>
       <Image
         src="https://media.istockphoto.com/id/1481370371/photo/portrait-of-enthusiastic-hispanic-young-woman-working-on-computer-in-a-modern-bright-office.jpg?s=612x612&w=0&k=20&c=8kNce9Ruc9F2KXvnwf0stWQXCwwQTBCrW8efrqhUIa4="
-        alt="Green double couch with wooden legs"
+        alt="Working Hard"
       />
       <Card.Body gap="2">
         <Card.Title>{habit?.name}</Card.Title>

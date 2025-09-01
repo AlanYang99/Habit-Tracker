@@ -34,10 +34,16 @@ interface HabitProps {
   completionStatus: boolean;
 }
 
+interface HabitLogs {
+  creationDate: Date;
+  notes: string;
+}
+
 export default function DashboardPage() {
-  const { userData, dueHabitsData } = useLoaderData<{
+  const { userData, dueHabitsData, userActions } = useLoaderData<{
     userData: UserDataProps;
     dueHabitsData: HabitProps[];
+    userActions: HabitLogs[];
   }>();
 
   return (
@@ -115,7 +121,7 @@ export default function DashboardPage() {
         </GridItem>
 
         <GridItem area="timeline" display="flex">
-          <UserActions />
+          <UserActions habitlogs={userActions} />
         </GridItem>
       </Grid>
     </Box>
@@ -126,7 +132,12 @@ export async function dashboardLoader() {
   try {
     const userResponse = await apiClient.get("/auth/user-summary");
     const dueHabits = await apiClient.get("/habit/due");
-    return { userData: userResponse?.data, dueHabitsData: dueHabits?.data };
+    const actions = await apiClient.get("/habit-log");
+    return {
+      userData: userResponse?.data,
+      dueHabitsData: dueHabits?.data,
+      userActions: actions?.data,
+    };
   } catch (error) {
     const axiosError = error as AxiosError;
     throw new Response("Failed to fetch information for user", {

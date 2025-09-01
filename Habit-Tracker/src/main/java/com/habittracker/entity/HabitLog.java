@@ -25,4 +25,7 @@ public class HabitLog extends BaseEntity {
 
     @Column(name = "completed", nullable = false)
     private boolean completed;
+
+    @Column(name = "notes")
+    private String notes;
 }

@@ -8,24 +8,20 @@ import com.habittracker.mapper.HabitMapper;
 import com.habittracker.repository.*;
 import com.habittracker.dto.HabitRequestDto;
 import com.habittracker.entity.*;
-import com.habittracker.enumtype.HabitFrequency;
 import com.habittracker.service.IGameStatService;
 import com.habittracker.service.IHabitService;
 import com.habittracker.service.IStreakService;
 import com.habittracker.specification.CalendarHabitSpecification;
 import com.habittracker.specification.DailyHabitSpecification;
-import com.habittracker.specification.HabitSpecification;
 import com.habittracker.specification.WeeklyHabitSpecification;
 import com.habittracker.util.UserUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -46,6 +42,7 @@ public class HabitServiceImpl implements IHabitService {
     private final UserUtil userUtil;
     private final HabitMapper habitMapper;
     private final DueHabitMapper dueHabitMapper;
+    private final UserRepository userRepository;
 
     @Override
     public HabitDto createHabit(final HabitRequestDto habitRequestDto) {
@@ -56,7 +53,6 @@ public class HabitServiceImpl implements IHabitService {
 
         final AbstractHabit habit = HabitFactory.createHabit(habitRequestDto);
         habit.setUser(currentUser);
-        // Upgrade to factory pattern after
         habitRepository.save(habit);
         return habitMapper.mapToDto(habit);
     }
@@ -72,14 +68,7 @@ public class HabitServiceImpl implements IHabitService {
 
         final LocalDate today = LocalDate.now();
         final LocalDate date = params.containsKey("date") ? LocalDate.parse(params.get("date")) : today;
-        final List<AbstractHabit> habits = Stream.of(
-                findHabitsBySpec(DailyHabitSpecification.userId(currentUser.getId())
-                        .and(DailyHabitSpecification.validDate(date)), dailyHabitRepository),
-                findHabitsBySpec(WeeklyHabitSpecification.userId(currentUser.getId())
-                        .and(WeeklyHabitSpecification.validDate(date)), weeklyHabitRepository),
-                findHabitsBySpec(CalendarHabitSpecification.userId(currentUser.getId())
-                        .and(CalendarHabitSpecification.validDate(date)), calendarHabitRepository))
-                .flatMap(List::stream).collect(Collectors.toUnmodifiableList());
+        final List<AbstractHabit> habits = getDueHabitsByDate(date);
 
         final Map<Long, HabitLog> habitLogsMap = habitLogRepository.findByUserIdAndCreationDate(currentUser.getId(), date).stream()
                 .collect(Collectors.toMap(log -> log.getHabit().getId(), Function.identity()));
@@ -134,29 +123,46 @@ public class HabitServiceImpl implements IHabitService {
         habitLog.setUser(currentUser);
         habitLog.setCreationDate(LocalDate.now());
         habitLog.setCompleted(true);
+        habitLog.setNotes(String.format("Completed %s", habit.getName()));
         habitLogRepository.save(habitLog);
 
         gameStatService.updateGameStatsOnHabitCompletion();
         streakService.updateStreaks();
     }
 
-    private AbstractHabit createDailyHabit() {
-        return new DailyHabit();
+    public void markIncompleteHabits() {
+        final List<User> users = userRepository.findAll();
+        final LocalDate yesterDay = LocalDate.now().minusDays(1);
+
+        users.forEach(user -> {
+            final List<AbstractHabit> habits = habitRepository.findUnloggedHabitsByDate(user.getId(), yesterDay);
+
+            habits.forEach( habit -> {
+                final HabitLog habitLog = new HabitLog();
+                habitLog.setHabit(habit);
+                habitLog.setUser(user);
+                habitLog.setCreationDate(LocalDate.now());
+                habitLog.setCompleted(false);
+                habitLog.setNotes(String.format("Failed to complete %s", habit.getName()));
+                habitLogRepository.save(habitLog);
+            });
+        });
     }
 
-    private AbstractHabit createWeeklyHabit(final HabitRequestDto habitRequestDto) {
-        final WeeklyHabit weeklyHabit = new WeeklyHabit();
-        weeklyHabit.setDaysOfWeek(new HashSet<>(habitRequestDto.getDaysOfWeek()));
-        return weeklyHabit;
+    private List<AbstractHabit> getDueHabitsByDate(final LocalDate date) {
+        final User currentUser = userUtil.getCurrentUser();
+
+        return Stream.of(
+                findHabitsBySpec(DailyHabitSpecification.userId(currentUser.getId())
+                        .and(DailyHabitSpecification.validDate(date)), dailyHabitRepository),
+                findHabitsBySpec(WeeklyHabitSpecification.userId(currentUser.getId())
+                        .and(WeeklyHabitSpecification.validDate(date)), weeklyHabitRepository),
+                findHabitsBySpec(CalendarHabitSpecification.userId(currentUser.getId())
+                        .and(CalendarHabitSpecification.validDate(date)), calendarHabitRepository))
+                        .flatMap(List::stream).collect(Collectors.toUnmodifiableList());
     }
 
-    private AbstractHabit createCalendarHabit(final HabitRequestDto habitRequestDto) {
-        final CalendarHabit calendarHabit = new CalendarHabit();
-        calendarHabit.setScheduledDates(new HashSet<>(habitRequestDto.getSpecificDates()));
-        return calendarHabit;
-    }
-
-    private <T extends AbstractHabit> List<T> findHabitsBySpec(Specification<T> spec, org.springframework.data.jpa.repository.JpaSpecificationExecutor<T> repo) {
+    private <T extends AbstractHabit> List<T> findHabitsBySpec(final Specification<T> spec, org.springframework.data.jpa.repository.JpaSpecificationExecutor<T> repo) {
         return repo.findAll(spec);
     }
 }

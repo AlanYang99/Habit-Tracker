@@ -1,8 +1,8 @@
 import { Outlet, Navigate } from "react-router";
 import { useAuth } from "../store/AuthContext";
 import { Flex } from "@chakra-ui/react";
-import Header from "@/Header";
-import SideBar from "@/Sidebar";
+import Header from "@/components/Header";
+import SideBar from "@/components/Sidebar";
 
 export default function SecuredPage() {
   const { isAuthenticated } = useAuth();
