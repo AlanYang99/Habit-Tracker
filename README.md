@@ -1,1 +1,8 @@
-Hello
+Next to do:
+
+Priority:
+Add new apis, to link some of the current statistic components, as currently some of them are using static data
+Revamp the UI interfaces especially in dueHabits, and habits (consider using a table, with an option to view a specific habit card using dialog, and add pagination)
+Clean up the UI Code (Quite messy), can split it into more reusable components
+Update the dtos in to conform to a more consistent response structure, currently its pretty plain and has no metadata.
+ 
