@@ -141,7 +141,7 @@ public class HabitServiceImpl implements IHabitService {
                 final HabitLog habitLog = new HabitLog();
                 habitLog.setHabit(habit);
                 habitLog.setUser(user);
-                habitLog.setCreationDate(LocalDate.now());
+                habitLog.setCreationDate(yesterDay);
                 habitLog.setCompleted(false);
                 habitLog.setNotes(String.format("Failed to complete %s", habit.getName()));
                 habitLogRepository.save(habitLog);
